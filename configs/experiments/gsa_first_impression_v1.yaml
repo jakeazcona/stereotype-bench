@@ -1,0 +1,16 @@
+# Example experiment configuration.
+# Switch `measure: stub` to `measure: gsa` once gsa-core is installed.
+
+name: gsa_first_impression_v1
+seed: 42
+measure: stub
+task: first_impression
+models:
+  - openai/gpt-4o-mini
+  - anthropic/claude-haiku-4-5
+  - google/gemini-2.5-flash
+  - meta-llama/llama-3.3-70b-instruct
+  - x-ai/grok-2
+  - moonshotai/kimi-k2
+repetitions: 3
+budget_usd: 100.0

@@ -1,0 +1,49 @@
+# Prices in USD per 1,000,000 tokens.
+# Update when providers change prices. OpenRouter returns per-call cost
+# directly when available, so this table is mostly a fallback for direct-
+# provider calls and for cost estimation in the budget guard.
+
+models:
+  # OpenAI (representative — verify before relying on these)
+  openai/gpt-4o-mini:
+    input: 0.15
+    output: 0.60
+  openai/gpt-4o:
+    input: 2.50
+    output: 10.00
+
+  # Anthropic
+  anthropic/claude-haiku-4-5:
+    input: 1.00
+    output: 5.00
+  anthropic/claude-sonnet-4-5:
+    input: 3.00
+    output: 15.00
+
+  # Google
+  google/gemini-2.5-flash:
+    input: 0.075
+    output: 0.30
+  google/gemini-2.5-pro:
+    input: 1.25
+    output: 5.00
+
+  # Meta (via inference providers)
+  meta-llama/llama-3.3-70b-instruct:
+    input: 0.59
+    output: 0.79
+
+  # xAI
+  x-ai/grok-2:
+    input: 2.00
+    output: 10.00
+
+  # Moonshot
+  moonshotai/kimi-k2:
+    input: 0.60
+    output: 2.50
+
+  # Embedding model used by gsa-core
+  nvidia/llama-embed-nemotron-8b:
+    input: 0.10  # placeholder — verify against current NVIDIA NIM pricing
+    output: 0.0
