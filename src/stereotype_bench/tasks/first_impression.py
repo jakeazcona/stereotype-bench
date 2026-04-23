@@ -38,14 +38,17 @@ _FEMALE_NAMES = [
 ]
 
 
-def make_default_personas(seed: int = 42) -> list[dict]:
-    """50 personas: 25 male + 25 female, ages 25-35 (deterministic given seed)."""
+def make_default_personas(seed: int = 42, n_per_gender: int = 25) -> list[dict]:
+    """`2 * n_per_gender` personas (clamped to 25 per gender), ages 25-35,
+    deterministic given seed.
+    """
     rng = random.Random(seed)
+    n = max(0, min(int(n_per_gender), len(_MALE_NAMES), len(_FEMALE_NAMES)))
     out: list[dict] = []
-    for n in _MALE_NAMES:
-        out.append({"name": n, "gender": "male", "age": rng.randint(25, 35)})
-    for n in _FEMALE_NAMES:
-        out.append({"name": n, "gender": "female", "age": rng.randint(25, 35)})
+    for name in _MALE_NAMES[:n]:
+        out.append({"name": name, "gender": "male", "age": rng.randint(25, 35)})
+    for name in _FEMALE_NAMES[:n]:
+        out.append({"name": name, "gender": "female", "age": rng.randint(25, 35)})
     return out
 
 
@@ -115,12 +118,19 @@ class FirstImpressionTask:
     def __init__(
         self,
         personas: list[dict] | None = None,
+        n_personas_per_gender: int | None = None,
         variants: list[str] | None = None,
         repetitions: int = 1,
         primed_traits_n: int = 3,
         seed: int = 42,
         measure: Any | None = None,
     ) -> None:
+        # Personas resolution: explicit list wins; else generate N-per-gender;
+        # else fall back to the bundled 25+25 default.
+        if personas is None and n_personas_per_gender is not None:
+            personas = make_default_personas(
+                seed=seed, n_per_gender=n_personas_per_gender
+            )
         self.personas = personas if personas is not None else PLACEHOLDER_PERSONAS
         self.variants = variants if variants is not None else list(DEFAULT_VARIANTS)
         self.repetitions = max(1, int(repetitions))

@@ -35,6 +35,36 @@ def test_default_personas_is_50_balanced():
         assert 25 <= p["age"] <= 35
 
 
+def test_n_per_gender_truncates_default():
+    personas = make_default_personas(n_per_gender=10)
+    assert len(personas) == 20
+    assert sum(p["gender"] == "male" for p in personas) == 10
+    assert sum(p["gender"] == "female" for p in personas) == 10
+
+
+def test_n_per_gender_clamped_to_max_names():
+    personas = make_default_personas(n_per_gender=999)
+    assert len(personas) == 50  # capped at 25 per gender
+
+
+def test_task_n_personas_per_gender_arg():
+    task = FirstImpressionTask(
+        n_personas_per_gender=24,
+        variants=["plain"],
+    )
+    assert len(task.personas) == 48
+
+
+def test_explicit_personas_wins_over_n_per_gender():
+    custom = [{"name": "X", "gender": "male", "age": 30}]
+    task = FirstImpressionTask(
+        personas=custom,
+        n_personas_per_gender=10,
+        variants=["plain"],
+    )
+    assert task.personas == custom
+
+
 def test_plain_variant_no_measure_required():
     task = FirstImpressionTask(
         personas=[{"name": "X", "gender": "male", "age": 30}],

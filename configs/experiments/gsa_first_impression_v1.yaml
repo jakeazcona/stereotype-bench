@@ -1,8 +1,22 @@
-# Full GSA benchmark: 50 personas × 100 reps × 7 models × 4 variants = 140,000
-# trials. Estimated cost: ~$30-50 on OpenRouter (Sonnet 4.5 dominates at ~$28).
+# Full GSA benchmark.
+#   48 personas (24 male + 24 female, ages 25-35, deterministic from seed)
+#   120 repetitions per (persona × variant × model)
+#   7 models, 4 variants
+# = 48 × 120 × 4 × 7 = 161,280 trials
 #
-# Run this only after smoke_gsa_full.yaml succeeds. Plan ~2-3 hours runtime
-# at concurrency=12. Pause your HF Inference Endpoint when done.
+# Estimated cost (per the 2026-04-23 smoke baseline + OpenRouter list prices):
+#   - 6 cheaper models (Haiku, GPT-4o-mini, Gemini Flash, Llama-70B, Grok-4-Fast, Kimi K2): ~$15-20
+#   - Claude Sonnet 4.5: ~$25-30 alone (its per-call cost is ~10× Haiku's)
+#   - HF Inference Endpoint runtime (~5-6 hrs A10G at $1/hr): ~$5
+#   - **Total: ~$45-55** (well within the $100 cap below)
+# To skip Sonnet and save ~$25-30: comment it out in the models: list.
+#
+# Estimated runtime at concurrency=24 (twice the prior default of 12):
+#   - With Sonnet: ~5-6 hours
+#   - Without Sonnet: ~4-5 hours
+# Concurrency doesn't affect cost — only wall-clock time. Higher (e.g. 32) is
+# possible if the HF endpoint and OpenRouter handle it; retries will absorb
+# transient saturation.
 
 name: gsa_first_impression_v1
 seed: 42
@@ -16,13 +30,13 @@ models:
   - meta-llama/llama-3.3-70b-instruct
   - x-ai/grok-4-fast
   - moonshotai/kimi-k2
-repetitions: 100
+repetitions: 120
 budget_usd: 100.0
-concurrency: 12
+concurrency: 24
 generation_params:
   max_tokens: 400
   temperature: 0.7
 task_params:
   variants: [plain, three_traits, reinforcing, challenging]
+  n_personas_per_gender: 24
   primed_traits_n: 3
-  # personas defaults to the bundled 25M+25F set (ages 25-35).
