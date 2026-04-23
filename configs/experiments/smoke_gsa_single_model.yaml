@@ -1,14 +1,18 @@
 # Smoke test: single cheap model, 5 placeholder personas, 1 rep each.
 # First run triggers the 36-trait GSA fit + cache (~$0.0001 on NIM).
 
-name: smoke_gsa_single_model
+name: smoke_gsa_multi_model
 seed: 42
 measure: gsa
 task: first_impression
 models:
-  - anthropic/claude-haiku-4-5
+  - anthropic/claude-haiku-4.5
+  - openai/gpt-4o-mini
+  - google/gemini-2.5-flash
+  - meta-llama/llama-3.3-70b-instruct
+  - x-ai/grok-4-fast
 repetitions: 1
 budget_usd: 5.0
 generation_params:
-  max_tokens: 400      # Free-tier-friendly; 2-3 sentence character judgments need << this
+  max_tokens: 400      # Free-tier-friendly; 30-word descriptions fit easily
   temperature: 0.7

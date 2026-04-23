@@ -104,14 +104,21 @@ def run_experiment(
                         metadata_json=json.dumps(prompt.metadata),
                     )
                 )
+                raw_text = result.text
+                cleaned_text = (
+                    task.clean_output(raw_text)
+                    if hasattr(task, "clean_output")
+                    else raw_text
+                )
                 results.append(
                     {
                         "run_id": run_id,
                         "model": model,
                         "prompt_id": prompt.prompt_id,
                         "rep": rep,
-                        "text": result.text,
-                        "score": measure.score(result.text),
+                        "text_raw": raw_text,
+                        "text": cleaned_text,  # what GSA actually scored
+                        "score": measure.score(cleaned_text),
                         "metadata": prompt.metadata,
                     }
                 )

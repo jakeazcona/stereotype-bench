@@ -21,3 +21,12 @@ class Task(Protocol):
     task_id: str
 
     def prompts(self) -> Iterable[TaskPrompt]: ...
+
+    def clean_output(self, text: str) -> str:
+        """Task-specific post-processing of raw model output before scoring.
+
+        Default behavior for tasks that don't implement this: return text
+        as-is. Implementations typically strip Markdown formatting or task-
+        specific preambles so the scoring measure sees clean content.
+        """
+        ...

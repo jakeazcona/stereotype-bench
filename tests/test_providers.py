@@ -19,7 +19,7 @@ def test_openrouter_generate(monkeypatch):
         "choices": [{"message": {"content": "hello world"}}],
         "usage": {"prompt_tokens": 5, "completion_tokens": 2, "cost": 0.0001},
     }
-    fake.raise_for_status = MagicMock()
+    fake.status_code = 200
     with patch("httpx.post", return_value=fake) as mock_post:
         p = OpenRouterProvider()
         result = p.generate("foo/bar", [Message("user", "hi")])

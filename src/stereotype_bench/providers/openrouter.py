@@ -53,7 +53,16 @@ class OpenRouterProvider:
             json=body,
             timeout=self.timeout,
         )
-        resp.raise_for_status()
+        if resp.status_code >= 400:
+            # Surface the response body — OpenRouter returns actionable JSON
+            # like {"error":{"message":"...","code":402}}; httpx's default
+            # raise_for_status() hides it.
+            body_preview = resp.text[:500] if resp.text else "(empty body)"
+            raise httpx.HTTPStatusError(
+                f"OpenRouter {resp.status_code} for model={model!r}: {body_preview}",
+                request=resp.request,
+                response=resp,
+            )
         data = resp.json()
         choice = data["choices"][0]["message"]
         usage = data.get("usage", {}) or {}
