@@ -12,6 +12,7 @@ from rich.table import Table
 from . import measures as _measures
 from .costs.db import CostDB
 from .costs.pricing import PricingTable
+from .plots.means_ci import plot_means_ci
 from .runner import ExperimentConfig, run_experiment
 from .tasks import TASKS
 
@@ -65,6 +66,30 @@ def list_models_cmd() -> None:
     pt = PricingTable.load()
     for m in pt.known_models():
         console.print(f"  {m}")
+
+
+@app.command()
+def plot(
+    run_id: str = typer.Argument(
+        ...,
+        help="Run ID — JSONL filename stem (without .jsonl) under --runs-dir.",
+    ),
+    runs_dir: Path = typer.Option(
+        Path("./runs"), help="Directory containing run JSONL files"
+    ),
+    out: Optional[Path] = typer.Option(
+        None, help="Output figure path (defaults to runs/<run_id>.png)"
+    ),
+    title: Optional[str] = typer.Option(None, help="Figure title"),
+) -> None:
+    """Mean ± 95% CI bar chart for a completed run (one subplot per variant)."""
+    jsonl = runs_dir / f"{run_id}.jsonl"
+    if not jsonl.is_file():
+        console.print(f"[red]Not found:[/] {jsonl}")
+        raise typer.Exit(code=2)
+    fig_path = out if out else runs_dir / f"{run_id}.png"
+    plot_means_ci(jsonl, fig_path, title=title or f"GSA: {run_id}")
+    console.print(f"[green]Wrote:[/] {fig_path}")
 
 
 @app.command()

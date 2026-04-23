@@ -1,19 +1,28 @@
-# Example experiment configuration.
-# Switch `measure: stub` to `measure: gsa` once gsa-core is installed.
+# Full GSA benchmark: 50 personas × 100 reps × 7 models × 4 variants = 140,000
+# trials. Estimated cost: ~$30-50 on OpenRouter (Sonnet 4.5 dominates at ~$28).
+#
+# Run this only after smoke_gsa_full.yaml succeeds. Plan ~2-3 hours runtime
+# at concurrency=12. Pause your HF Inference Endpoint when done.
 
 name: gsa_first_impression_v1
 seed: 42
-measure: stub
+measure: gsa
 task: first_impression
 models:
-  - openai/gpt-4o-mini
   - anthropic/claude-haiku-4.5
+  - anthropic/claude-sonnet-4.5
+  - openai/gpt-4o-mini
   - google/gemini-2.5-flash
   - meta-llama/llama-3.3-70b-instruct
   - x-ai/grok-4-fast
   - moonshotai/kimi-k2
-repetitions: 3
+repetitions: 100
 budget_usd: 100.0
+concurrency: 12
 generation_params:
   max_tokens: 400
   temperature: 0.7
+task_params:
+  variants: [plain, three_traits, reinforcing, challenging]
+  primed_traits_n: 3
+  # personas defaults to the bundled 25M+25F set (ages 25-35).
