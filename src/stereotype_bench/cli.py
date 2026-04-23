@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
+from dotenv import load_dotenv
 from rich.console import Console
 from rich.table import Table
 
@@ -13,6 +14,11 @@ from .costs.db import CostDB
 from .costs.pricing import PricingTable
 from .runner import ExperimentConfig, run_experiment
 from .tasks import TASKS
+
+# Auto-load .env from CWD or parent dirs so API keys (OPENROUTER_API_KEY,
+# NVIDIA_API_KEY) are available without manual `export`. Does not override
+# pre-set environment variables.
+load_dotenv()
 
 app = typer.Typer(
     help="Measure-agnostic LLM stereotype benchmark engine.",
