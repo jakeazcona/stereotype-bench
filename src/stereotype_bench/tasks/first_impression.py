@@ -13,6 +13,9 @@ from .base import TaskPrompt
 PLACEHOLDER_PERSONAS: list[dict] = [
     {"name": "Michael", "gender": "male", "descriptor": "a 30-year-old"},
     {"name": "Sarah", "gender": "female", "descriptor": "a 30-year-old"},
+    {"name": "Daniel", "gender": "male", "descriptor": "a 45-year-old"},
+    {"name": "Emily", "gender": "female", "descriptor": "a 25-year-old"},
+    {"name": "James", "gender": "male", "descriptor": "a 50-year-old"},
 ]
 
 

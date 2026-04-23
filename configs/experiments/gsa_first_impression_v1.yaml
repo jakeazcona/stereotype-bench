@@ -14,3 +14,6 @@ models:
   - moonshotai/kimi-k2
 repetitions: 3
 budget_usd: 100.0
+generation_params:
+  max_tokens: 400
+  temperature: 0.7

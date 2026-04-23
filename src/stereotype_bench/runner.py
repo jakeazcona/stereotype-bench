@@ -25,6 +25,10 @@ class ExperimentConfig:
     models: list[str]
     repetitions: int = 1
     budget_usd: float = 100.0
+    # Passed as kwargs to provider.generate() — e.g. max_tokens, temperature.
+    # OpenRouter caps free-tier requests by reserved max output tokens, so
+    # setting max_tokens here is the main lever for staying under free tier.
+    generation_params: dict = field(default_factory=dict)
     extras: dict = field(default_factory=dict)
 
     @classmethod
@@ -34,6 +38,7 @@ class ExperimentConfig:
         known = {
             "name", "seed", "measure", "task",
             "models", "repetitions", "budget_usd",
+            "generation_params",
         }
         extras = {k: v for k, v in data.items() if k not in known}
         return cls(
@@ -44,6 +49,7 @@ class ExperimentConfig:
             models=list(data["models"]),
             repetitions=int(data.get("repetitions", 1)),
             budget_usd=float(data.get("budget_usd", 100.0)),
+            generation_params=dict(data.get("generation_params") or {}),
             extras=extras,
         )
 
@@ -72,7 +78,9 @@ def run_experiment(
         for model in config.models:
             for rep in range(config.repetitions):
                 guard.check(run_id=run_id)
-                result = provider.generate(model, prompt.messages)
+                result = provider.generate(
+                    model, prompt.messages, **config.generation_params
+                )
                 cost = result.cost_usd
                 if cost is None:
                     cost = (
