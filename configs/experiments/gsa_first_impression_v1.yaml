@@ -33,6 +33,12 @@ models:
 repetitions: 120
 budget_usd: 100.0
 concurrency: 24
+# Kimi-K2 via OpenRouter's shared Moonshot pool is chronically 429-limited.
+# Run it in a small dedicated pool so its retry backoffs don't starve the
+# other six models' 24-wide main pool.
+slow_models:
+  - moonshotai/kimi-k2
+slow_concurrency: 3
 generation_params:
   max_tokens: 400
   temperature: 0.7

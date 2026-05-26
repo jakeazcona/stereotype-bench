@@ -13,6 +13,7 @@ from . import measures as _measures
 from .costs.db import CostDB
 from .costs.pricing import PricingTable
 from .plots.means_ci import plot_means_ci
+from .progress import configure_logging
 from .runner import ExperimentConfig, run_experiment
 from .tasks import TASKS
 
@@ -33,13 +34,21 @@ def run(
     config: Path = typer.Argument(..., exists=True, help="Path to experiment YAML"),
     out: Path = typer.Option(Path("./runs"), help="Output directory for results"),
     force: bool = typer.Option(False, "--force", help="Override budget guard"),
+    resume: Optional[str] = typer.Option(
+        None,
+        "--resume",
+        help="Resume an existing run: appends to <out>/<RUN_ID>.jsonl and "
+             "skips (prompt_id, model) pairs already present.",
+    ),
 ) -> None:
     """Run an experiment from a YAML config."""
+    configure_logging()
     cfg = ExperimentConfig.from_yaml(config)
     console.print(
         f"[bold]Running:[/] {cfg.name}  (measure={cfg.measure}, task={cfg.task})"
+        + (f"  [yellow]resume={resume}[/]" if resume else "")
     )
-    summary = run_experiment(cfg, out, force=force)
+    summary = run_experiment(cfg, out, force=force, resume_run_id=resume)
     console.print(f"[green]Run complete:[/] {summary['run_id']}")
     console.print(
         f"  Results: {summary['results_path']}  ({summary['n_results']} rows)"
